@@ -193,10 +193,10 @@ function NewEngine(hub) {
 
 		if (!n) {
 			s = "go infinite";
-		} else if (config.use_movetime) {			// Super-secret option for now. Not saved to config file.
-			s = `go movetime ${n}`;
-		} else {
+		} else if (config.use_nodes) {			// Super-secret option for now. Not saved to config file.
 			s = `go nodes ${n}`;
+		} else {
+			s = `go movetime ${n}`;
 		}
 
 		if (config.searchmoves_buttons && this.search_desired.searchmoves.length > 0) {

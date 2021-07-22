@@ -6,7 +6,7 @@ const engineconfig_io = require("./engineconfig_io");
 
 exports.about_versus_mode = `The "play this colour" option causes Leela to \
 evaluate one side of the position only. The top move is automatically played on \
-the board upon reaching the node limit (see the Engine menu). This allows you to \
+the board upon reaching the time limit (see the Engine menu). This allows you to \
 play against Leela.
 
 The "self-play" option causes Leela to play itself.

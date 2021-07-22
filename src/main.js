@@ -151,12 +151,12 @@ function startup() {
 		set_one_check(msg === "pgn", "Play", "Use PGN book...");
 	});
 
-	electron.ipcMain.on("ack_node_limit", (event, msg) => {
-		set_checks("Engine", "Node limit - normal", msg);
+	electron.ipcMain.on("ack_time_limit", (event, msg) => {
+		set_checks("Engine", "Time limit - normal", msg);
 	});
 
-	electron.ipcMain.on("ack_special_node_limit", (event, msg) => {
-		set_checks("Engine", "Node limit - auto-eval / play", msg);
+	electron.ipcMain.on("ack_special_time_limit", (event, msg) => {
+		set_checks("Engine", "Time limit - auto-eval / play", msg);
 	});
 
 	electron.ipcMain.on("ack_setoption", (event, msg) => {
@@ -2472,7 +2472,7 @@ function menu_build() {
 					type: "separator"
 				},
 				{
-					label: "Node limit - normal",
+					label: "Time limit - normal",
 					submenu: [
 						{
 							label: "Unlimited",
@@ -2481,7 +2481,7 @@ function menu_build() {
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
+									fn: "set_time_limit",
 									args: [null]
 								});
 								// Will receive an ack IPC which sets menu checks.
@@ -2491,133 +2491,145 @@ function menu_build() {
 							type: "separator"
 						},
 						{
-							label: "1,000,000,000",
+							label: "30 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [1 * billion]
+									fn: "set_time_limit",
+									args: [30 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100,000,000",
+							label: "10 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [100 * million]
+									fn: "set_time_limit",
+									args: [10 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "10,000,000",
+							label: "5 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [10 * million]
+									fn: "set_time_limit",
+									args: [5 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "1,000,000",
+							label: "2 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [1 * million]
+									fn: "set_time_limit",
+									args: [2 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100,000",
+							label: "1 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [100000]
+									fn: "set_time_limit",
+									args: [60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "10,000",
+							label: "30 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [10000]
+									fn: "set_time_limit",
+									args: [30 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "1,000",
+							label: "20 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [1000]
+									fn: "set_time_limit",
+									args: [20 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100",
+							label: "10 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit",
+									fn: "set_time_limit",
+									args: [10 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "5 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit",
+									args: [5 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "2 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit",
+									args: [2 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "1 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit",
+									args: [1 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "100 ms",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit",
 									args: [100]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "10",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [10]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "2",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [2]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "1",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit",
-									args: [1]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
@@ -2630,8 +2642,8 @@ function menu_build() {
 							accelerator: "CommandOrControl+=",
 							click: () => {
 								win.webContents.send("call", {
-									fn: "adjust_node_limit",
-									args: [1, false]
+									fn: "adjust_time_limit",
+									args: [1000, false]
 								});
 							}
 						},
@@ -2640,144 +2652,156 @@ function menu_build() {
 							accelerator: "CommandOrControl+-",
 							click: () => {
 								win.webContents.send("call", {
-									fn: "adjust_node_limit",
-									args: [-1, false]
+									fn: "adjust_time_limit",
+									args: [-1000, false]
 								});
 							}
 						},
 					]
 				},
 				{
-					label: "Node limit - auto-eval / play",
+					label: "Time limit - auto-eval / play",
 					submenu: [
 						{
-							label: "1,000,000,000",
+							label: "30 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [1 * billion]
+									fn: "set_time_limit_special",
+									args: [30 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100,000,000",
+							label: "10 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [100 * million]
+									fn: "set_time_limit_special",
+									args: [10 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "10,000,000",
+							label: "5 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [10 * million]
+									fn: "set_time_limit_special",
+									args: [5 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "1,000,000",
+							label: "2 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [1 * million]
+									fn: "set_time_limit_special",
+									args: [2 * 60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100,000",
+							label: "1 min",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [100000]
+									fn: "set_time_limit_special",
+									args: [60 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "10,000",
+							label: "30 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [10000]
+									fn: "set_time_limit_special",
+									args: [30 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "1,000",
+							label: "20 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [1000]
+									fn: "set_time_limit_special",
+									args: [20 * 1000]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
 						},
 						{
-							label: "100",
+							label: "10 s",
 							type: "checkbox",
 							checked: false,
 							click: () => {
 								win.webContents.send("call", {
-									fn: "set_node_limit_special",
+									fn: "set_time_limit_special",
+									args: [10 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "5 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit_special",
+									args: [5 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "2 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit_special",
+									args: [2 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "1 s",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit_special",
+									args: [1 * 1000]
+								});
+								// Will receive an ack IPC which sets menu checks.
+							}
+						},
+						{
+							label: "100 ms",
+							type: "checkbox",
+							checked: false,
+							click: () => {
+								win.webContents.send("call", {
+									fn: "set_time_limit_special",
 									args: [100]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "10",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [10]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "2",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [2]
-								});
-								// Will receive an ack IPC which sets menu checks.
-							}
-						},
-						{
-							label: "1",
-							type: "checkbox",
-							checked: false,
-							click: () => {
-								win.webContents.send("call", {
-									fn: "set_node_limit_special",
-									args: [1]
 								});
 								// Will receive an ack IPC which sets menu checks.
 							}
@@ -2790,7 +2814,7 @@ function menu_build() {
 							accelerator: "CommandOrControl+]",
 							click: () => {
 								win.webContents.send("call", {
-									fn: "adjust_node_limit",
+									fn: "adjust_time_limit",
 									args: [1, true]
 								});
 							}
@@ -2800,7 +2824,7 @@ function menu_build() {
 							accelerator: "CommandOrControl+[",
 							click: () => {
 								win.webContents.send("call", {
-									fn: "adjust_node_limit",
+									fn: "adjust_time_limit",
 									args: [-1, true]
 								});
 							}

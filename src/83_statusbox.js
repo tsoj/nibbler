@@ -114,8 +114,8 @@ function NewStatusHandler() {
 						stoppedtext = ` <span class="blue">(stopped)</span>`;
 					}
 
-					if (typeof engineconfig[engine.filepath].search_nodes === "number" && engineconfig[engine.filepath].search_nodes > 0) {
-						if (node.table.nodes >= engineconfig[engine.filepath].search_nodes) {
+					if (typeof engineconfig[engine.filepath].search_time === "number" && engineconfig[engine.filepath].search_time > 0) {
+						if (node.table.nodes >= engineconfig[engine.filepath].search_time) {
 							stoppedtext = ` <span class="blue">(limit met)</span>`;
 						}
 					}

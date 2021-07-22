@@ -37,7 +37,7 @@ function fix(cfg) {
 			cfg[key].options = {};
 		}
 
-		// We don't really care about missing search_nodes and search_nodes_special properties.
+		// We don't really care about missing search_time and search_time_special properties.
 	}
 }
 
@@ -45,8 +45,8 @@ exports.newentry = () => {
 	return {
 		"args": [],
 		"options": {},
-		"search_nodes": null,
-		"search_nodes_special": 10000,
+		"search_time": null,
+		"search_time_special": 1000,
 	};
 };
 

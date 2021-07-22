@@ -15,7 +15,7 @@ User changes BEHAVIOUR ----------------------------/              |
 User changes SEARCHMOVES -----> handle_searchmoves_change() ------/
                                                                   |
                                                                   |
-User changes NODE LIMITS ------> handle_node_limit_change() ------/
+User changes TIME LIMITS ------> handle_time_limit_change() ------/
 
 
 Notes:

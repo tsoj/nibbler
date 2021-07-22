@@ -58,11 +58,11 @@ let hub_props = {
 		case "analysis_free":
 		case "auto_analysis":
 
-			// Note that the 2nd part of the condition is needed because changing behaviour can change what node_limit()
+			// Note that the 2nd part of the condition is needed because changing behaviour can change what time_limit()
 			// returns, therefore we might already be running a search for the right node but with the wrong limit.
 			// THIS IS TRUE THROUGHOUT THIS FUNCTION.
 
-			if (this.engine.search_desired.node !== this.tree.node || this.engine.search_desired.limit !== this.node_limit()) {
+			if (this.engine.search_desired.node !== this.tree.node || this.engine.search_desired.limit !== this.time_limit()) {
 				this.__go(this.tree.node);
 			}
 			break;
@@ -82,7 +82,7 @@ let hub_props = {
 
 			} else {
 
-				if (this.engine.search_desired.node !== this.leela_lock_node || this.engine.search_desired.limit !== this.node_limit()) {
+				if (this.engine.search_desired.node !== this.leela_lock_node || this.engine.search_desired.limit !== this.time_limit()) {
 					this.__go(this.leela_lock_node);
 				}
 
@@ -102,7 +102,7 @@ let hub_props = {
 					break;
 				}
 
-				if (this.engine.search_desired.node !== this.tree.node || this.engine.search_desired.limit !== this.node_limit()) {
+				if (this.engine.search_desired.node !== this.tree.node || this.engine.search_desired.limit !== this.time_limit()) {
 					this.__go(this.tree.node);
 				}
 
@@ -218,7 +218,7 @@ let hub_props = {
 		}
 
 		// If there's no search desired, changing params probably shouldn't start one. As of 1.8.3, when a search
-		// completes due to hitting the (normal) node limit, behaviour gets changed back to "halt" in one way or
+		// completes due to hitting the (normal) time limit, behaviour gets changed back to "halt" in one way or
 		// another.
 	},
 
@@ -840,7 +840,7 @@ let hub_props = {
 			this.engine.set_search_desired(null);
 			return;
 		}
-		this.engine.set_search_desired(node, this.node_limit(), node.searchmoves);
+		this.engine.set_search_desired(node, this.time_limit(), node.searchmoves);
 	},
 
 	// ---------------------------------------------------------------------------------------------------------------------
@@ -892,7 +892,7 @@ let hub_props = {
 
 			break;
 
-		case "analysis_free":			// We hit the node limit.
+		case "analysis_free":			// We hit the time limit.
 
 			if (!config.allow_stopped_analysis) {
 				this.set_behaviour("halt");
@@ -901,7 +901,7 @@ let hub_props = {
 
 		case "analysis_locked":
 
-			// We hit the node limit. If the node we're looking at isn't the locked node, don't
+			// We hit the time limit. If the node we're looking at isn't the locked node, don't
 			// change behaviour. (It will get changed when we enter the locked node.)
 
 			if (this.tree.node === this.leela_lock_node) {
@@ -926,17 +926,6 @@ let hub_props = {
 					this.engine.leelaish = true;
 					break;
 				}
-			}
-
-			// Our defaults in engineconfig_io.newentry() are appropriate for Leelaish engines.
-			// But if this is the first time we see an A/B engine, we must adjust them...
-
-			if (!this.engine.leelaish && !engineconfig[this.engine.filepath].options["MultiPV"]) {
-				// This likely indicates the engine is new to the config.
-				engineconfig[this.engine.filepath].options["MultiPV"] = 3;				// Will get ack'd when engine_send_all_options() happens
-				engineconfig[this.engine.filepath].search_nodes_special = 10000000;
-				this.send_ack_node_limit(true);
-				this.save_engineconfig();
 			}
 
 			// Pass unknown engines to the error handler to be displayed...
@@ -1005,11 +994,11 @@ let hub_props = {
 	},
 
 	// ---------------------------------------------------------------------------------------------------------------------
-	// Node limits...
+	// Time limits...
 
-	node_limit: function() {
+	time_limit: function() {
 
-		// Given the current state of the config, what is the node limit?
+		// Given the current state of the config, what is the time limit?
 
 		let cfg_value;
 
@@ -1020,12 +1009,12 @@ let hub_props = {
 		case "self_play":
 		case "auto_analysis":
 
-			cfg_value = engineconfig[this.engine.filepath].search_nodes_special;
+			cfg_value = engineconfig[this.engine.filepath].search_time_special;
 			break;
 
 		default:
 
-			cfg_value = engineconfig[this.engine.filepath].search_nodes;
+			cfg_value = engineconfig[this.engine.filepath].search_time;
 			break;
 
 		}
@@ -1039,59 +1028,59 @@ let hub_props = {
 		}
 	},
 
-	adjust_node_limit: function(direction, special_flag) {
+	adjust_time_limit: function(direction, special_flag) {
 
-		let cfg_value = special_flag ? engineconfig[this.engine.filepath].search_nodes_special : engineconfig[this.engine.filepath].search_nodes;
+		let cfg_value = special_flag ? engineconfig[this.engine.filepath].search_time_special : engineconfig[this.engine.filepath].search_time;
 
 		if (direction > 0) {
 
 			if (typeof cfg_value !== "number" || cfg_value <= 0) {				// Already unlimited
-				this.set_node_limit_generic(null, special_flag);
+				this.set_time_limit_generic(null, special_flag);
 				return;
 			}
 
 			for (let i = 0; i < limit_options.length; i++) {
 				if (limit_options[i] > cfg_value) {
-					this.set_node_limit_generic(limit_options[i], special_flag);
+					this.set_time_limit_generic(limit_options[i], special_flag);
 					return;
 				}
 			}
 
-			this.set_node_limit_generic(null, special_flag);
+			this.set_time_limit_generic(null, special_flag);
 
 		} else {
 
 			if (typeof cfg_value !== "number" || cfg_value <= 0) {				// Unlimited; reduce to highest finite option
-				this.set_node_limit_generic(limit_options[limit_options.length - 1], special_flag);
+				this.set_time_limit_generic(limit_options[limit_options.length - 1], special_flag);
 				return;
 			}
 
 			for (let i = limit_options.length - 1; i >= 0; i--) {
 				if (limit_options[i] < cfg_value) {
-					this.set_node_limit_generic(limit_options[i], special_flag);
+					this.set_time_limit_generic(limit_options[i], special_flag);
 					return;
 				}
 			}
 
-			this.set_node_limit_generic(1, special_flag);
+			this.set_time_limit_generic(1, special_flag);
 		}
 	},
 
-	set_node_limit: function(val) {
-		this.set_node_limit_generic(val, false);
+	set_time_limit: function(val) {
+		this.set_time_limit_generic(val, false);
 	},
 
-	set_node_limit_special: function(val) {
-		this.set_node_limit_generic(val, true);
+	set_time_limit_special: function(val) {
+		this.set_time_limit_generic(val, true);
 	},
 
-	set_node_limit_generic: function(val, special_flag) {
+	set_time_limit_generic: function(val, special_flag) {
 
 		if (typeof val !== "number" || val <= 0) {
 			val = null;
 		}
 
-		let msg_start = special_flag ? "Special node limit" : "Node limit";
+		let msg_start = special_flag ? "Special time limit" : "Time limit";
 
 		if (val) {
 			this.set_special_message(`${msg_start} now ${CommaNum(val)}`, "blue");
@@ -1100,26 +1089,26 @@ let hub_props = {
 		}
 
 		if (special_flag) {
-			engineconfig[this.engine.filepath].search_nodes_special = val;
+			engineconfig[this.engine.filepath].search_time_special = val;
 		} else {
-			engineconfig[this.engine.filepath].search_nodes = val;
+			engineconfig[this.engine.filepath].search_time = val;
 		}
 
 		this.save_engineconfig();
-		this.send_ack_node_limit(special_flag);
+		this.send_ack_time_limit(special_flag);
 
 		this.handle_search_params_change();
 	},
 
-	send_ack_node_limit: function(special_flag) {
+	send_ack_time_limit: function(special_flag) {
 
-		let ack_type = special_flag ? "ack_special_node_limit" : "ack_node_limit";
+		let ack_type = special_flag ? "ack_special_time_limit" : "ack_time_limit";
 		let val;
 
 		if (special_flag) {
-			val = engineconfig[this.engine.filepath].search_nodes_special;
+			val = engineconfig[this.engine.filepath].search_time_special;
 		} else {
-			val = engineconfig[this.engine.filepath].search_nodes;
+			val = engineconfig[this.engine.filepath].search_time;
 		}
 
 		if (val) {
@@ -1276,8 +1265,8 @@ let hub_props = {
 
 		this.engine.send("uci");
 
-		this.send_ack_node_limit(false);			// Ack the node limits that are set in engineconfig[this.engine.filepath]
-		this.send_ack_node_limit(true);
+		this.send_ack_time_limit(false);			// Ack the time limits that are set in engineconfig[this.engine.filepath]
+		this.send_ack_time_limit(true);
 
 		this.info_handler.reset_engine_info();
 		this.info_handler.must_draw_infobox();		// To display the new stderr log that appears.
